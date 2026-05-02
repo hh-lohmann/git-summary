@@ -57,9 +57,9 @@ usage() {
           -q    Print nothing for repos that are up to date. Also print
                 a final tally.
 
-          -s	Sort the output. (Runs sequentially to avoid race conditions)
+          -s    Sort the output. (Runs sequentially to avoid race conditions)
 
-	  -f    Print full repo path names instead of relative ones
+          -f    Print full repo path names instead of relative ones
 
           path  Path to folder containing git repos; if omitted, the
                 current working directory is used.
@@ -94,7 +94,7 @@ git_summary() {
     # Use provided path, or default to pwd.
     # Here we also decide if we want relative or full path names printouts.
     local target=$(${readlink_cmd} -f ${1:-`pwd`})
-    if [ $full_path -eq 0 ] && command -v realpath >/dev/null && command -v python >/dev/null ; then 
+    if [ $full_path -eq 0 ] ; then
 	local rtarget=$(get_relative_path $target)
     else
 	local rtarget=$target
@@ -368,6 +368,8 @@ max_len () {
 get_relative_path() {
   local target="$1"
   local base=$(pwd)
+
+  command -v realpath >/dev/null && command -v grep >/dev/null && realpath --help | grep "\-\-relative-to=" >/dev/null && realpath --relative-to=$base $target && return
 
   # Convert paths to absolute paths
   local target_absolute=$(realpath "$target")
